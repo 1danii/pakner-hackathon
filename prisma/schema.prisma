@@ -6,7 +6,27 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgresql"
+  provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma" //Plantscale only
+}
+
+model Day {
+  id    Int      @id @default(autoincrement())
+  date  DateTime
+  hours Hour[]
+}
+
+model Hour {
+  id    Int    @id @unique
+  tasks Task[]
+  day   Day    @relation(fields: [dayId], references: [id])
+  dayId Int
+}
+
+model Task {
+  id          Int    @id @default(autoincrement())
+  description String
+  hour        Hour   @relation(fields: [hourId], references: [id])
+  hourId      Int
 }
