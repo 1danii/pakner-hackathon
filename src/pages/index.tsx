@@ -1,5 +1,16 @@
 import Button from "@/components/button";
 import HabitsDropdown, { Habit } from "@/components/habit-dropdown";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn, useLocalStorage } from "@/lib/utils";
 import { Pause, Play } from "lucide-react";
 import { Poppins } from "next/font/google";
@@ -13,13 +24,117 @@ const poppins = Poppins({
 const initialHabits: Habit[] = [
   {
     emoji: "🎹",
-    name: "Piano",
+    name: "piano",
     durationProggress: 0,
-    duration: 30,
     bgLeft: "#2e2c26",
     bgRight: "#dedbd5",
   },
+  {
+    emoji: "📑",
+    name: "homework",
+    durationProggress: 0,
+    bgLeft: "#22f055",
+    bgRight: "#35dce8",
+  },
 ];
+
+const NewHabitDialog = ({
+  open,
+  setOpen,
+  setHabits,
+}: {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setHabits: any;
+}) => {
+  const [name, setName] = useState("");
+  const [emoji, setEmoji] = useState("🎸");
+  const [bgL, setBgL] = useState("#2e2c26");
+  const [bgR, setBgR] = useState("#dedbd5");
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      {/* <DialogTrigger asChild>
+        <Button>Edit Profile</Button>
+      </DialogTrigger> */}
+      <DialogContent className="bg-white/20 text-white backdrop-blur-lg sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Set your habit</DialogTitle>
+          <DialogDescription>
+            Make a new habit. Click save when you're done.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Icon
+            </Label>
+            <div className="flex w-full col-span-3 gap-4">
+              <Input
+                value={emoji}
+                onChange={e => setEmoji(e.target.value)}
+                id="emoji"
+                maxLength={2}
+                className="w-12"
+              />
+            </div>
+            <Label htmlFor="name" className="text-right">
+              Habit Name
+            </Label>
+            <div className="flex w-full col-span-3 gap-4">
+              <Input
+                id="name"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Piano practice"
+                className="col-span-3 w-full"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">Background Colors:</Label>
+            <div className="flex gap-4 col-span-3">
+              <Input
+                value={bgL}
+                onChange={e => setBgL(e.target.value)}
+                type="color"
+                id="bg-l"
+                className="w-12 rounded p-0"
+              />
+              <Input
+                value={bgR}
+                onChange={e => setBgR(e.target.value)}
+                type="color"
+                id="bg-r"
+                className="col-span-1 w-12 rounded p-0"
+              />
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            type="submit"
+            onClick={() => {
+              setHabits(prev => [
+                ...prev,
+                {
+                  emoji: emoji,
+                  name: name.toLowerCase(),
+                  durationProggress: 0,
+                  bgLeft: bgL,
+                  bgRight: bgR,
+                },
+              ]);
+              setOpen(false);
+            }}
+          >
+            Save changes
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export default function Home() {
   const [habits, setHabits] = useLocalStorage("habits", initialHabits);
@@ -29,8 +144,9 @@ export default function Home() {
 
   const [currentHabitName, setCurrentHabitName] = useState<string>("");
   const [habitsOpen, setHabitsOpen] = useState(false);
-
   const [currentHabit, setCurrentHabit] = useState<Habit | null>(null);
+
+  const [newHabitOpen, setNewHabitOpen] = useState(false);
 
   useEffect(() => {
     const habit = habits.find(habit => habit.name === currentHabitName) || null;
@@ -75,8 +191,14 @@ export default function Home() {
       }
       className={`${poppins.className} h-screen p-28`}
     >
+      <NewHabitDialog
+        open={newHabitOpen}
+        setOpen={setNewHabitOpen}
+        setHabits={setHabits}
+      />
       <nav className="fixed w-screen top-0 inset-x-0 px-28 pt-8 flex justify-between">
         <HabitsDropdown
+          setOpenNewHabit={setNewHabitOpen}
           habits={habits}
           value={currentHabitName}
           setValue={setCurrentHabitName}

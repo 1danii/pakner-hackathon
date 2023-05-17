@@ -1,4 +1,4 @@
-import { Button as ButtonRadix } from "@/components/ui/button";
+import { Button, Button as ButtonRadix } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -21,13 +21,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
 
 export type Habit = {
   emoji: string;
   name: string;
   durationProggress: number;
-  duration: number;
   bgLeft: string;
   bgRight: string;
 };
@@ -38,43 +37,48 @@ const HabitsDropdown = ({
   setValue,
   open,
   setOpen,
+  setOpenNewHabit,
 }: {
   habits: Habit[];
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenNewHabit: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const habitFull = habits.find(habit => habit.name === value);
+  const habitFull = habits.find(
+    habit => habit.name.toLowerCase() == value.toLowerCase()
+  );
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <ButtonRadix
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between h-full px-6 py-3 border border-white rounded-full text-base font-medium text-white bg-white bg-opacity-25 hover:bg-opacity-30 focus:outline-none hover:shadow-outline"
+          className="w-[250px] justify-between h-full px-6 py-3 border border-white rounded-full text-base font-medium text-white bg-white bg-opacity-25 hover:bg-opacity-30 focus:outline-none hover:shadow-outline"
         >
           {value ? `${habitFull?.emoji} ${habitFull?.name}` : "Select habit..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </ButtonRadix>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 bg-white bg-opacity-25 text-white">
+      <PopoverContent className="w-[250px] p-0 bg-white bg-opacity-25 text-white rounded-3xl">
         <Command>
           <CommandInput placeholder="Select habit..." />
           <CommandEmpty>No habit found.</CommandEmpty>
           <CommandGroup>
-            {habits.map(habit => (
+            {habits.map((habit, i) => (
               <CommandItem
+                className="hover:bg-white/25"
                 key={habit.name}
                 onSelect={currentValue => {
                   setValue(
-                    currentValue.toLowerCase() === value.toLowerCase()
+                    currentValue.toLowerCase() == value.toLowerCase()
                       ? ""
-                      : currentValue.charAt(0).toUpperCase() +
-                          currentValue.slice(1)
+                      : currentValue.toLowerCase()
                   );
                   setOpen(false);
                 }}
+                value={habit.name}
               >
                 <Check
                   className={cn(
@@ -82,10 +86,13 @@ const HabitsDropdown = ({
                     value === habit.name ? "opacity-100" : "opacity-0"
                   )}
                 />
-                {habit.name}
+                {`${habit.emoji} ${habit.name}`}
               </CommandItem>
             ))}
           </CommandGroup>
+          <Button onClick={() => setOpenNewHabit(true)}>
+            <PlusCircle /> Add habit
+          </Button>
         </Command>
       </PopoverContent>
     </Popover>
