@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle, Trash2 } from "lucide-react";
 
 export type Habit = {
   emoji: string;
@@ -33,6 +33,7 @@ export type Habit = {
 
 const HabitsDropdown = ({
   habits,
+  setHabits,
   value,
   setValue,
   open,
@@ -40,6 +41,7 @@ const HabitsDropdown = ({
   setOpenNewHabit,
 }: {
   habits: Habit[];
+  setHabits: any;
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
   open: boolean;
@@ -67,27 +69,38 @@ const HabitsDropdown = ({
           <CommandEmpty>No habit found.</CommandEmpty>
           <CommandGroup>
             {habits.map((habit, i) => (
-              <CommandItem
-                className="hover:bg-white/25"
-                key={habit.name}
-                onSelect={currentValue => {
-                  setValue(
-                    currentValue.toLowerCase() == value.toLowerCase()
-                      ? ""
-                      : currentValue.toLowerCase()
-                  );
-                  setOpen(false);
-                }}
-                value={habit.name}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4 text-white",
-                    value === habit.name ? "opacity-100" : "opacity-0"
-                  )}
+              <div className="flex items-center" key={habit.name}>
+                <CommandItem
+                  className="hover:bg-white/25 flex w-full justify-between items-center"
+                  onSelect={currentValue => {
+                    setValue(
+                      currentValue.toLowerCase() == value.toLowerCase()
+                        ? ""
+                        : currentValue.toLowerCase()
+                    );
+                    setOpen(false);
+                  }}
+                  value={habit.name}
+                >
+                  <div className="flex items-center">
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4 text-white",
+                        value === habit.name ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {`${habit.emoji} ${habit.name}`}
+                  </div>
+                </CommandItem>
+
+                <Trash2
+                  className="mx-2 hover:bg-white/25"
+                  strokeWidth={1}
+                  onClick={e => {
+                    setHabits(habits.splice(i - 1, 1));
+                  }}
                 />
-                {`${habit.emoji} ${habit.name}`}
-              </CommandItem>
+              </div>
             ))}
           </CommandGroup>
           <Button onClick={() => setOpenNewHabit(true)}>

@@ -12,9 +12,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn, useLocalStorage } from "@/lib/utils";
-import { Pause, Play } from "lucide-react";
+import { Check, LineChart, Pause, Play, RotateCcw } from "lucide-react";
 import { Poppins } from "next/font/google";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import statsImg from "../../public/stats.png";
 
 const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -145,13 +147,20 @@ export default function Home() {
   const [currentHabitName, setCurrentHabitName] = useState<string>("");
   const [habitsOpen, setHabitsOpen] = useState(false);
   const [currentHabit, setCurrentHabit] = useState<Habit | null>(null);
-
   const [newHabitOpen, setNewHabitOpen] = useState(false);
+
+  const [statsOpen, setStatsOpen] = useState(false);
 
   useEffect(() => {
     const habit = habits.find(habit => habit.name === currentHabitName) || null;
     setCurrentHabit(habit);
   }, [currentHabitName, habits]);
+
+  useEffect(() => {
+    setIsActive(false);
+    setSeconds(0);
+    setMinutes(0);
+  }, [currentHabitName]);
 
   useEffect(() => {
     let interval: any = null;
@@ -196,16 +205,31 @@ export default function Home() {
         setOpen={setNewHabitOpen}
         setHabits={setHabits}
       />
+      {statsOpen && (
+        <Image
+          src={statsImg}
+          width={1440}
+          height={969}
+          alt="Image"
+          className="z-50 mt-4 fixed left-1/2 -translate-x-1/2 h-[60%] object-contain"
+        />
+      )}
       <nav className="fixed w-screen top-0 inset-x-0 px-28 pt-8 flex justify-between">
         <HabitsDropdown
           setOpenNewHabit={setNewHabitOpen}
           habits={habits}
+          setHabits={setHabits}
           value={currentHabitName}
           setValue={setCurrentHabitName}
           open={habitsOpen}
           setOpen={setHabitsOpen}
         />
-        <Button>{}</Button>
+        <div className="fixed top-10 left-1/2 -translate-x-1/2 text-white text-xl">
+          Pakner Tracker
+        </div>
+        <Button className="z-50" onClick={() => setStatsOpen(!statsOpen)}>
+          <LineChart />
+        </Button>
       </nav>
       <div className="relative flex justify-center items-center w-full h-full">
         <div className="-z-50 pointer-events-none fixed inset-0 bg-gradient-to-tr from-[color:var(--bg-left)] to-[color:var(--bg-right)] duration-500"></div>
@@ -217,9 +241,31 @@ export default function Home() {
           <div className="text-lg font-light">IN FOCUS</div>
         </div>
       </div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center gap-4">
+        <Button
+          onClick={() => {
+            setIsActive(false);
+            setMinutes(0);
+            setSeconds(0);
+          }}
+          className="px-4"
+        >
+          <RotateCcw />
+        </Button>
+
         <Button onClick={startTimer} className="px-20">
           {isActive ? <Pause fill="white" /> : <Play fill="white" />}
+        </Button>
+
+        <Button
+          onClick={() => {
+            setIsActive(false);
+            setMinutes(0);
+            setSeconds(0);
+          }}
+          className="px-4"
+        >
+          <Check />
         </Button>
       </div>
     </main>
