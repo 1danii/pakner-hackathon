@@ -60,7 +60,7 @@ const NewHabitDialog = ({
         <DialogHeader>
           <DialogTitle>Set your habit</DialogTitle>
           <DialogDescription>
-            Make a new habit. Click save when you're done.
+            Make a new habit. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -151,7 +151,7 @@ export default function Home() {
   useEffect(() => {
     const habit = habits.find(habit => habit.name === currentHabitName) || null;
     setCurrentHabit(habit);
-  }, [currentHabitName]);
+  }, [currentHabitName, habits]);
 
   useEffect(() => {
     let interval: any = null;
